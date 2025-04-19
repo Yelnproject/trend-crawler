@@ -1,23 +1,31 @@
-import requests, csv
+# trend.py
+import requests, csv, os
 from datetime import datetime, timedelta
 
-# まずは「2日前」をターゲット（必要ならリトライで日を遡る）
-for back in range(2, 7):                 # 2〜6日前を試す
+# ---------- 1) 直近で必ずデータがある日を探す（2〜6日前） ----------
+for back in range(2, 7):
     day = datetime.utcnow() - timedelta(days=back)
     y, m, d = day.strftime("%Y"), day.strftime("%m"), day.strftime("%d")
-    url = f"https://wikimedia.org/api/rest_v1/metrics/pageviews/top/ja.wikipedia/all-access/{y}/{m}/{d}"
+    url = (f"https://wikimedia.org/api/rest_v1/metrics/pageviews/top/"
+           f"ja.wikipedia/all-access/{y}/{m}/{d}")
     res = requests.get(url)
     if res.status_code == 200 and res.text.strip():
-        print(f"✅ データ取得: {y}-{m}-{d}")
+        print(f"✅ data found: {y}-{m}-{d}")
         data = res.json()
         break
 else:
-    print("⚠️ 有効な日付のデータが見つかりませんでした")
-    exit(0)
+    print("⚠ No valid data, exit.")
+    raise SystemExit(0)
 
-# CSV 出力
-with open("trend.csv", "w", encoding="utf-8", newline="") as f:
+# ---------- 2) trend.csv をスクリプトと同じ階層に書き出し ----------
+csv_path = os.path.join(os.path.dirname(__file__), "trend.csv")
+with open(csv_path, "w", encoding="utf-8", newline="") as f:
     w = csv.writer(f)
     w.writerow(["timestamp", "rank", "article", "views"])
     for art in data["items"][0]["articles"][:100]:
-        w.writerow([datetime.utcnow().isoformat(), art["rank"], art["article"], art["views"]])
+        w.writerow([
+            datetime.utcnow().isoformat(timespec="seconds"),
+            art["rank"], art["article"], art["views"]
+        ])
+
+print(f"📦 CSV written -> {csv_path}")

@@ -3,7 +3,7 @@ import csv
 from datetime import datetime, timedelta
 
 # 安定動作用：2日前を指定
-safe_day = datetime.utcnow() - timedelta(days=2)
+safe_day = datetime.utcnow() - timedelta(days=50)
 day_str = safe_day.strftime("%Y%m%d")
 
 

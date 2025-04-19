@@ -9,7 +9,7 @@ day_str = safe_day.strftime("%Y%m%d")
 
 
 # Wikipedia API 呼び出し
-url = f"https://wikimedia.org/api/rest_v1/metrics/pageviews/top/ja.wikipedia/all-access/{day_str}"
+url = f"https://wikimedia.org/api/rest_v1/metrics/pageviews/top/ja.wikipedia/all-access/user/{day_str}"
 res = requests.get(url)
 data = res.json()
 

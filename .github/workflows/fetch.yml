@@ -2,26 +2,31 @@ name: Fetch Wikipedia Top
 
 on:
   schedule:
-    - cron: '0 3 * * *'  # 毎日12:00(JST)に実行
-  workflow_dispatch:
+    - cron: '0 3 * * *'   # UTC 03:00 → 日本時間 12:00
+  workflow_dispatch:      # 手動トリガも可
 
 jobs:
   run:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Python
+
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-      - name: Install requests
+
+      - name: Install dependencies
         run: pip install requests
-      - name: Run script
+
+      - name: Run trend script
         run: python trend.py
-      - name: Commit and push
+
+      - name: Commit and push CSV
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add trend.csv
-          git commit -m "update: daily trend" || echo "no changes"
+          git commit -m "update: daily trend" || echo "no changes to commit"
           git push

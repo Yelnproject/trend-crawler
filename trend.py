@@ -2,22 +2,17 @@
 import requests, csv, os
 from datetime import datetime, timedelta
 
-# ---------- 1) 直近で必ずデータがある日を探す（2〜6日前） ----------
-for back in range(2, 7):
-    day = datetime.utcnow() - timedelta(days=back)
-    y, m, d = day.strftime("%Y"), day.strftime("%m"), day.strftime("%d")
-    url = (f"https://wikimedia.org/api/rest_v1/metrics/pageviews/top/"
-           f"ja.wikipedia/all-access/{y}/{m}/{d}")
-    res = requests.get(url)
-    if res.status_code == 200 and res.text.strip():
-        print(f"✅ data found: {y}-{m}-{d}")
-        data = res.json()
-        break
-else:
-    print("⚠ No valid data, exit.")
-    raise SystemExit(0)
+# ---- 1) 取得する日付 = 2 日前（UTC 基準） ------------------
+day = datetime.utcnow() - timedelta(days=2)
+y, m, d = day.strftime("%Y"), day.strftime("%m"), day.strftime("%d")
+url = f"https://wikimedia.org/api/rest_v1/metrics/pageviews/top/ja.wikipedia/all-access/{y}/{m}/{d}"
+print(f"Fetching: {url}")
 
-# ---------- 2) trend.csv をスクリプトと同じ階層に書き出し ----------
+res = requests.get(url)
+res.raise_for_status()               # 200 以外なら例外で終了
+data = res.json()
+
+# ---- 2) CSV 出力（ファイルはリポジトリ直下に作成） ---------
 csv_path = os.path.join(os.path.dirname(__file__), "trend.csv")
 with open(csv_path, "w", encoding="utf-8", newline="") as f:
     w = csv.writer(f)
@@ -28,4 +23,4 @@ with open(csv_path, "w", encoding="utf-8", newline="") as f:
             art["rank"], art["article"], art["views"]
         ])
 
-print(f"📦 CSV written -> {csv_path}")
+print(f"✔ CSV written → {csv_path}")

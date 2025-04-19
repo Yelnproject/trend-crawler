@@ -2,9 +2,10 @@ import requests
 import csv
 from datetime import datetime, timedelta
 
-# 昨日の日付
-yesterday = datetime.utcnow() - timedelta(days=1)
-day_str = yesterday.strftime("%Y%m%d")
+# 安定動作用：2日前を指定
+safe_day = datetime.utcnow() - timedelta(days=2)
+day_str = safe_day.strftime("%Y%m%d")
+
 
 
 # Wikipedia API 呼び出し

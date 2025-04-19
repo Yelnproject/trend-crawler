@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, UTC   # Python 3.11 以降
 
 # ---------- 設定 ----------
 DAYS_BACK = 2                                    # 何日前を取るか
-USER_AGENT = "TrendCrawler/0.1 (+https://github.com/<YOUR_NAME>/trend-crawler)"
+USER_AGENT = "TrendCrawler/0.1 (+https://github.com/Yelnproject/trend-crawler)"
 
 # ---------- 1) URL生成 ----------
 day = datetime.now(UTC) - timedelta(days=DAYS_BACK)
@@ -17,7 +17,7 @@ url = (
 print(f"Fetching: {url}")
 
 # ---------- 2) API呼び出し ----------
-res = requests.get(url, headers={"User-Agent": Yelnproject}, timeout=30)
+res = requests.get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
 res.raise_for_status()                            # 200以外で例外
 data = res.json()
 
